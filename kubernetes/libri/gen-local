@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+go run *.go \
+    --nLibrarians=4 \
+    --cpuLimit=100m \
+    --memoryLimit=250M \
+    --diskSize=1
