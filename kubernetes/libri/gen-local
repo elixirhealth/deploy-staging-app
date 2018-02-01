@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 
+set -eou pipefail
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+pushd ${DIR} > /dev/null 2>&1
+
 go run *.go \
+    --localCluster \
     --nLibrarians=4 \
     --cpuLimit=100m \
-    --memoryLimit=250M \
+    --ramLimit=250M \
     --diskSize=1
+
+popd > /dev/null 2>&1

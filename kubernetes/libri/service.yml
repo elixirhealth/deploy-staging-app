@@ -37,14 +37,13 @@ metadata:
   name: data-librarians-0
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   capacity:
     storage: 10Gi
   accessModes: ["ReadWriteOnce"]
-  hostPath:
-    path: "/data/data-librarians-0"
+  gcePersistentDisk:
+      fsType: "ext4"
+      pdName: "data-librarians-0"
   
 ---
 # PersistentVolumeClaim for librarian 0's PersistentVolume
@@ -54,8 +53,6 @@ metadata:
   name: data-librarians-0
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   accessModes: ["ReadWriteOnce"]
   resources:
@@ -84,14 +81,13 @@ metadata:
   name: data-librarians-1
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   capacity:
     storage: 10Gi
   accessModes: ["ReadWriteOnce"]
-  hostPath:
-    path: "/data/data-librarians-1"
+  gcePersistentDisk:
+      fsType: "ext4"
+      pdName: "data-librarians-1"
   
 ---
 # PersistentVolumeClaim for librarian 1's PersistentVolume
@@ -101,8 +97,6 @@ metadata:
   name: data-librarians-1
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   accessModes: ["ReadWriteOnce"]
   resources:
@@ -131,14 +125,13 @@ metadata:
   name: data-librarians-2
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   capacity:
     storage: 10Gi
   accessModes: ["ReadWriteOnce"]
-  hostPath:
-    path: "/data/data-librarians-2"
+  gcePersistentDisk:
+      fsType: "ext4"
+      pdName: "data-librarians-2"
   
 ---
 # PersistentVolumeClaim for librarian 2's PersistentVolume
@@ -148,8 +141,6 @@ metadata:
   name: data-librarians-2
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   accessModes: ["ReadWriteOnce"]
   resources:
@@ -178,14 +169,13 @@ metadata:
   name: data-librarians-3
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   capacity:
     storage: 10Gi
   accessModes: ["ReadWriteOnce"]
-  hostPath:
-    path: "/data/data-librarians-3"
+  gcePersistentDisk:
+      fsType: "ext4"
+      pdName: "data-librarians-3"
   
 ---
 # PersistentVolumeClaim for librarian 3's PersistentVolume
@@ -195,8 +185,6 @@ metadata:
   name: data-librarians-3
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   accessModes: ["ReadWriteOnce"]
   resources:
@@ -225,14 +213,13 @@ metadata:
   name: data-librarians-4
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   capacity:
     storage: 10Gi
   accessModes: ["ReadWriteOnce"]
-  hostPath:
-    path: "/data/data-librarians-4"
+  gcePersistentDisk:
+      fsType: "ext4"
+      pdName: "data-librarians-4"
   
 ---
 # PersistentVolumeClaim for librarian 4's PersistentVolume
@@ -242,8 +229,6 @@ metadata:
   name: data-librarians-4
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   accessModes: ["ReadWriteOnce"]
   resources:
@@ -272,14 +257,13 @@ metadata:
   name: data-librarians-5
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   capacity:
     storage: 10Gi
   accessModes: ["ReadWriteOnce"]
-  hostPath:
-    path: "/data/data-librarians-5"
+  gcePersistentDisk:
+      fsType: "ext4"
+      pdName: "data-librarians-5"
   
 ---
 # PersistentVolumeClaim for librarian 5's PersistentVolume
@@ -289,8 +273,6 @@ metadata:
   name: data-librarians-5
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   accessModes: ["ReadWriteOnce"]
   resources:
@@ -319,14 +301,13 @@ metadata:
   name: data-librarians-6
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   capacity:
     storage: 10Gi
   accessModes: ["ReadWriteOnce"]
-  hostPath:
-    path: "/data/data-librarians-6"
+  gcePersistentDisk:
+      fsType: "ext4"
+      pdName: "data-librarians-6"
   
 ---
 # PersistentVolumeClaim for librarian 6's PersistentVolume
@@ -336,8 +317,6 @@ metadata:
   name: data-librarians-6
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   accessModes: ["ReadWriteOnce"]
   resources:
@@ -366,14 +345,13 @@ metadata:
   name: data-librarians-7
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   capacity:
     storage: 10Gi
   accessModes: ["ReadWriteOnce"]
-  hostPath:
-    path: "/data/data-librarians-7"
+  gcePersistentDisk:
+      fsType: "ext4"
+      pdName: "data-librarians-7"
   
 ---
 # PersistentVolumeClaim for librarian 7's PersistentVolume
@@ -383,8 +361,6 @@ metadata:
   name: data-librarians-7
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   accessModes: ["ReadWriteOnce"]
   resources:
@@ -452,7 +428,7 @@ spec:
         resources:
           limits:
             memory: 2G
-            cpu: 100m
+            cpu: 200m
 
       initContainers:
       - image: devth/k8s-labeler

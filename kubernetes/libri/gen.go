@@ -77,7 +77,7 @@ func init() {
 		"librarian data disk size (GB)")
 	cmd.Flags().BoolVar(&config.LocalCluster, localClusterFlag, false,
 		"whether k8s cluster is running on minikube")
-	cmd.Flags().BoolVar(&config.LocalCluster, gcpClusterFlag, true,
+	cmd.Flags().BoolVar(&config.GCPCluster, gcpClusterFlag, true,
 		"whether k8s cluster is running on GCP")
 	cmd.Flags().IntVar(&nLibrarians, nLibrariansFlag, defaultNLibrarians,
 		"number of librarians")

@@ -46,8 +46,6 @@ metadata:
   name: data-librarians-{{ $index }}
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: standard
 spec:
   capacity:
     storage: {{ $diskSize }}Gi
@@ -60,6 +58,7 @@ spec:
   {{ if $localCluster -}}
   hostPath:
     path: "/data/data-librarians-{{ $index }}"
+  reclaimPolicy: ""
   {{ end }}
 ---
 # PersistentVolumeClaim for librarian {{ $index }}'s PersistentVolume
@@ -69,8 +68,6 @@ metadata:
   name: data-librarians-{{ $index }}
   labels:
     app: libri
-  annotations:
-    volume.beta.kubernetes.io/storage-class: ssd
 spec:
   accessModes: ["ReadWriteOnce"]
   resources:
@@ -116,11 +113,9 @@ spec:
             fieldRef:
               fieldPath: status.podIP
         - name: LIBRI_PUBLICHOST
-        # TODO external peers once k8s v1.7.0 is available (with status.hostIP support)
-        # - move librarians to use hostIP:30100+ ports for public addresses
           valueFrom:
             fieldRef:
-              fieldPath: status.podIP
+              fieldPath: status.hostIP
         ports:
         - containerPort: {{ $localPort }}
         - containerPort: {{ $localMetricsPort }}
