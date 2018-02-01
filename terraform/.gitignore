@@ -1,0 +1,5 @@
+.terraform/
+
+# secrets
+gcp_credentials.json
+secrets.auto.tfvars
