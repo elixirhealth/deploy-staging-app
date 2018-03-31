@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+gcr_secret_name="gcr-json-key"
+
+if [[ ! $(kubectl get secrets | grep ${gcr_secret_name}) ]]; then
+    kubectl create secret docker-registry ${gcr_secret_name} \
+        --docker-server=https://gcr.io \
+        --docker-username=_json_key \
+        --docker-password="$(cat ${DIR}/gcr-ro.credentials.json)" \
+        --docker-email="deploy@elixirhealth.io"
+fi
+
+${DIR}/catalog/apply

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SERVICE_TEMPLATE_FILE="${DIR}/../_templates/service.yml"
+OUTPUT_FILE="${DIR}/service.yml"
+
+source "${DIR}/env.sh"
+export $(grep K8S_SERVICE "${DIR}/env.sh" | sed -r 's/.*(K8S_SERVICE_.+) ?(=|<<).*/\1/g')
+
+envsubst < "${SERVICE_TEMPLATE_FILE}" > "${OUTPUT_FILE}"

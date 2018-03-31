@@ -2,12 +2,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: catalog
+  name: ${K8S_SERVICE_NAME}
   annotations:
       prometheus.io/scrape: 'false'  # get metrics from indiv pods
 spec:
   selector:
-    app: catalog
+    app: ${K8S_SERVICE_NAME}
   type: ClusterIP
   ports:
     - port: 10100
@@ -15,30 +15,29 @@ spec:
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: catalog
+  name: ${K8S_SERVICE_NAME}
 spec:
-  replicas: 1
+  replicas: ${K8S_SERVICE_LIMIT_N_REPLICAS}
   selector:
     matchLabels:
-      app: catalog
+      app: ${K8S_SERVICE_NAME}
   template:
     metadata:
       labels:
-        app: catalog
+        app: ${K8S_SERVICE_NAME}
     spec:
       imagePullSecrets:
         - name: gcr-json-key
       volumes:
-        - name: app-catalog-creds
+        - name: app-${K8S_SERVICE_NAME}-creds
           secret:
-            secretName: app-catalog-creds
+            secretName: app-${K8S_SERVICE_NAME}-creds
       containers:
-      - name: catalog
-        image: gcr.io/elixir-core-prod/catalog:snapshot
+      - name: ${K8S_SERVICE_NAME}
+        image: gcr.io/elixir-core-prod/${K8S_SERVICE_NAME}:${K8S_SERVICE_VERSION}
         args: [
           "start",
-          "--storageDataStore",
-          "--gcpProjectID", "elixir-deploy-staging-1"
+          ${K8S_SERVICE_START_ARGS}
         ]
         ports:
           - name: service
@@ -48,7 +47,7 @@ spec:
           - name: profiler
             containerPort: 10102
         volumeMounts:
-          - name: app-catalog-creds
+          - name: app-${K8S_SERVICE_NAME}-creds
             mountPath: /var/secrets/google
         env:
           - name: GODEBUG         # ensure we use the pure Go (rather than CGO) DNS
@@ -57,5 +56,5 @@ spec:
             value: /var/secrets/google/creds.json
         resources:
           limits:
-            memory: 500M
-            cpu: 100m
+            memory: ${K8S_SERVICE_LIMIT_MEM}
+            cpu: ${K8S_SERVICE_LIMIT_CPU}
