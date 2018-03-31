@@ -20,7 +20,7 @@ variable "region" {
 
 variable "gcp_credentials_file" {
   description = "GCP credentials JSON file"
-  default     = "gcp_credentials.json"
+  default     = "secret.gcp.creds.json"
 }
 
 variable "zone" {
