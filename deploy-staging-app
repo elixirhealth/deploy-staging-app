@@ -27,6 +27,8 @@ fi
 rm ${PLAN_FILE}
 popd > /dev/null 2>&1
 
+kubernetes/apply
+
 # clean up
 ./secrets clean
 echo "Deleted plaintext secrets."

@@ -1,0 +1,61 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog
+  annotations:
+      prometheus.io/scrape: 'false'  # get metrics from indiv pods
+spec:
+  selector:
+    app: catalog
+  type: ClusterIP
+  ports:
+    - port: 10100
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog
+  template:
+    metadata:
+      labels:
+        app: catalog
+    spec:
+      imagePullSecrets:
+        - name: gcr-json-key
+      volumes:
+        - name: app-catalog-creds
+          secret:
+            secretName: app-catalog-creds
+      containers:
+      - name: catalog
+        image: gcr.io/elixir-core-prod/catalog:snapshot
+        args: [
+          "start",
+          "--storageDataStore",
+          "--gcpProjectID", "elixir-deploy-staging-1"
+        ]
+        ports:
+          - name: service
+            containerPort: 10100
+          - name: metrics
+            containerPort: 10101
+          - name: profiler
+            containerPort: 10102
+        volumeMounts:
+          - name: app-catalog-creds
+            mountPath: /var/secrets/google
+        env:
+          - name: GODEBUG         # ensure we use the pure Go (rather than CGO) DNS
+            value: netdns=go      # resolver (see https://golang.org/src/net/net.go)
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /var/secrets/google/creds.json
+        resources:
+          limits:
+            memory: 500M
+            cpu: 100m

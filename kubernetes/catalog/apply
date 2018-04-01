@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# generate k8s manifest
+source ${DIR}/gen
+
+# create creds secret if it doesn't exist
+creds_secret_name="app-${K8S_SERVICE_NAME}-creds"
+creds_secret_file="${DIR}/secret.creds.json"
+if [[ ! $(kubectl get secrets | grep ${creds_secret_name}) ]]; then
+    kubectl create secret generic "${creds_secret_name}" --from-file=creds.json=${creds_secret_file}
+fi
+
+# update k8s
+kubectl apply -f "${DIR}/service.yml"
