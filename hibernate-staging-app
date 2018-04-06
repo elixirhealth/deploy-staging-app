@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+source terraform/env.sh
+
+git checkout master-dormant
+git rebase master
+
+./kubernetes/delete
+
+# TODO (drausin) snapshot Libri PDs
+
+./deploy-staging-app
