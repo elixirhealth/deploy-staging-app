@@ -14,13 +14,29 @@ variable "region" {
   description = "region to deploy infrastructure in"
 }
 
+variable "primary_db_name" {
+  description = "Primary PostgreSQL DB name"
+}
+
+variable "catalog_service_db_user" {
+  description = "catalog-service DB user"
+}
+
+###########
+# Secrets #
+###########
+
+variable "catalog_service_db_password" {
+  description = "password for catalog-service DB user"
+}
+
 ############
 # Optional #
 ############
 
 variable "gcp_credentials_file" {
   description = "GCP credentials JSON file"
-  default     = "secret.gcp.creds.json"
+  default     = "secret.gcp-creds.json"
 }
 
 variable "zone" {
