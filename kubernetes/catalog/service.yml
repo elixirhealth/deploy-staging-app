@@ -29,16 +29,16 @@ spec:
       imagePullSecrets:
         - name: gcr-json-key
       volumes:
-        - name: app-catalog-creds
+        - name: app-catalog-gcp-creds
           secret:
-            secretName: app-catalog-creds
+            secretName: app-catalog-gcp-creds
       containers:
       - name: catalog
         image: gcr.io/elixir-core-prod/catalog:snapshot
         args: [
           "start",
-          "--storageDataStore",
-          "--gcpProjectID", "elixir-deploy-staging-1"
+          "--storagePostgres",
+          "--dbURL", "postgres://$(CATALOG_DBUSER)@127.0.0.1:5432/catalog?sslmode=disable"
         ]
         ports:
           - name: service
@@ -48,14 +48,34 @@ spec:
           - name: profiler
             containerPort: 10102
         volumeMounts:
-          - name: app-catalog-creds
-            mountPath: /var/secrets/google
+          - name: app-catalog-gcp-creds
+            mountPath: /var/secrets/gcp
+            readOnly: true
         env:
-          - name: GODEBUG         # ensure we use the pure Go (rather than CGO) DNS
-            value: netdns=go      # resolver (see https://golang.org/src/net/net.go)
           - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: /var/secrets/google/creds.json
+            value: /var/secrets/gcp/creds.json
+          - name: CATALOG_DBUSER
+            valueFrom:
+              secretKeyRef:
+                name: app-catalog-db-creds
+                key: user
+          - name: CATALOG_DBPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: app-catalog-db-creds
+                key: password
         resources:
           limits:
             memory: 500M
             cpu: 100m
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.11
+        command: [
+          "/cloud_sql_proxy",
+          "-instances=elixir-deploy-staging-1:us-east1:primary-1=tcp:5432",
+          "-credential_file=/var/secrets/gcp/creds.json"
+        ]
+        volumeMounts:
+          - name: app-catalog-gcp-creds
+            mountPath: /var/secrets/gcp
+            readOnly: true

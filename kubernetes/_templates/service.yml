@@ -29,15 +29,16 @@ spec:
       imagePullSecrets:
         - name: gcr-json-key
       volumes:
-        - name: app-${K8S_SERVICE_NAME}-creds
+        - name: app-${K8S_SERVICE_NAME}-gcp-creds
           secret:
-            secretName: app-${K8S_SERVICE_NAME}-creds
+            secretName: app-${K8S_SERVICE_NAME}-gcp-creds
       containers:
       - name: ${K8S_SERVICE_NAME}
         image: gcr.io/elixir-core-prod/${K8S_SERVICE_NAME}:${K8S_SERVICE_VERSION}
         args: [
           "start",
-          ${K8S_SERVICE_START_ARGS}
+          "--storagePostgres",
+          "--dbURL", "postgres://$(${K8S_SERVICE_NAME_UPPER}_DBUSER)@127.0.0.1:5432/${K8S_SERVICE_NAME}?sslmode=disable"
         ]
         ports:
           - name: service
@@ -47,14 +48,34 @@ spec:
           - name: profiler
             containerPort: 10102
         volumeMounts:
-          - name: app-${K8S_SERVICE_NAME}-creds
-            mountPath: /var/secrets/google
+          - name: app-${K8S_SERVICE_NAME}-gcp-creds
+            mountPath: /var/secrets/gcp
+            readOnly: true
         env:
-          - name: GODEBUG         # ensure we use the pure Go (rather than CGO) DNS
-            value: netdns=go      # resolver (see https://golang.org/src/net/net.go)
           - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: /var/secrets/google/creds.json
+            value: /var/secrets/gcp/creds.json
+          - name: ${K8S_SERVICE_NAME_UPPER}_DBUSER
+            valueFrom:
+              secretKeyRef:
+                name: app-catalog-db-creds
+                key: user
+          - name: ${K8S_SERVICE_NAME_UPPER}_DBPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: app-catalog-db-creds
+                key: password
         resources:
           limits:
             memory: ${K8S_SERVICE_LIMIT_MEM}
             cpu: ${K8S_SERVICE_LIMIT_CPU}
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.11
+        command: [
+          "/cloud_sql_proxy",
+          "-instances=${TF_VAR_gcp_project}:${TF_VAR_region}:${TF_VAR_primary_db_name}=tcp:5432",
+          "-credential_file=/var/secrets/gcp/creds.json"
+        ]
+        volumeMounts:
+          - name: app-catalog-gcp-creds
+            mountPath: /var/secrets/gcp
+            readOnly: true

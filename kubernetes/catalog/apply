@@ -4,14 +4,28 @@ set -eou pipefail
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# load some vars
+source ${DIR}/env.sh
+source ${DIR}/../../terraform/env.sh
+source ${DIR}/../../terraform/secret.env.sh
+
 # generate k8s manifest
 source ${DIR}/gen
 
-# create creds secret if it doesn't exist
-creds_secret_name="app-${K8S_SERVICE_NAME}-creds"
-creds_secret_file="${DIR}/secret.creds.json"
-if [[ ! $(kubectl get secrets | grep ${creds_secret_name}) ]]; then
-    kubectl create secret generic "${creds_secret_name}" --from-file=creds.json=${creds_secret_file}
+# create GCP creds secret if it doesn't exist
+gcp_creds_secret_name="app-${K8S_SERVICE_NAME}-gcp-creds"
+gcp_creds_secret_file="${DIR}/secret.gcp-creds.json"
+if [[ ! $(kubectl get secrets | grep ${gcp_creds_secret_name}) ]]; then
+    kubectl create secret generic "${gcp_creds_secret_name}" \
+        --from-file=creds.json=${gcp_creds_secret_file}
+fi
+
+# create DB user creds secret if it doesn't exist
+db_creds_secret_name="app-${K8S_SERVICE_NAME}-db-creds"
+if [[ ! $(kubectl get secrets | grep ${db_creds_secret_name}) ]]; then
+    kubectl create secret generic "${db_creds_secret_name}" \
+        --from-literal=user=${TF_VAR_catalog_service_db_user} \
+        --from-literal=password=${TF_VAR_catalog_service_db_password}
 fi
 
 # update k8s
