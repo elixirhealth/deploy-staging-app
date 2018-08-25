@@ -14,4 +14,3 @@ if [[ ! $(kubectl get secrets | grep ${gcr_secret_name}) ]]; then
 fi
 
 ${DIR}/libri/apply
-${DIR}/catalog/apply

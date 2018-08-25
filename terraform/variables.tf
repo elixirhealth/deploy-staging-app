@@ -18,17 +18,9 @@ variable "primary_db_name" {
   description = "Primary PostgreSQL DB name"
 }
 
-variable "catalog_service_db_user" {
-  description = "catalog-service DB user"
-}
-
 ###########
 # Secrets #
 ###########
-
-variable "catalog_service_db_password" {
-  description = "password for catalog-service DB user"
-}
 
 ############
 # Optional #
