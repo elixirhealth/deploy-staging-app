@@ -387,7 +387,7 @@ spec:
     spec:
       containers:
       - name: libriarian
-        image: daedalus2718/libri:0.3.0
+        image: daedalus2718/libri:0.4.0
         args: [
           "librarian", "start",
           "--nSubscriptions", "2",
